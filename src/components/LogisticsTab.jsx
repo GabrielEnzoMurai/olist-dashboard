@@ -1,15 +1,32 @@
 import KpiCard from './KpiCard';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
-const PIE_COLORS = ['#22c55e', '#ef4444', '#f59e0b', '#3b82f6', '#8b5cf6', '#ec4899', '#64748b'];
+// Palette with good contrast but muted saturation for readability
+const PIE_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#64748b', '#06b6d4', '#f43f5e'];
+
+const STATUS_TRANSLATION = {
+  'delivered': 'Entregue',
+  'shipped': 'Enviado',
+  'canceled': 'Cancelado',
+  'unavailable': 'Indisponível',
+  'invoiced': 'Faturado',
+  'processing': 'Processando',
+  'created': 'Criado',
+  'approved': 'Aprovado'
+};
 
 function OrderStatusChart({ data }) {
+  const translatedData = data.map(item => ({
+    ...item,
+    name: STATUS_TRANSLATION[item.name] || item.name
+  }));
+
   return (
     <div style={{ width: '100%', height: 400 }}>
       <ResponsiveContainer>
         <PieChart>
           <Pie
-            data={data}
+            data={translatedData}
             innerRadius={100}
             outerRadius={140}
             paddingAngle={5}

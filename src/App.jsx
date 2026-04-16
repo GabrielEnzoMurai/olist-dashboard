@@ -14,6 +14,7 @@ function App() {
   const [rawData, setRawData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('Overview');
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [filters, setFilters] = useState({ month: '', state: '', category: '' });
 
   useEffect(() => {
@@ -143,8 +144,15 @@ function App() {
   }
 
   return (
-    <div className="app-layout">
-      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} onLogout={handleLogout} />
+    <div className={`app-layout ${isSidebarCollapsed ? 'collapsed' : ''}`}>
+      <Sidebar 
+        activeTab={activeTab} 
+        setActiveTab={setActiveTab} 
+        activeUser={activeUser} 
+        onLogout={handleLogout} 
+        collapsed={isSidebarCollapsed}
+        setCollapsed={setIsSidebarCollapsed}
+      />
       
       <div className="main-content">
         {/* Render filtering if NOT in settings */}

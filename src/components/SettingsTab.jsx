@@ -4,7 +4,10 @@ function SettingsTab({ activeUser, setActiveUser }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [msg, setMsg] = useState({ text: '', type: '' });
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   useEffect(() => {
     // Populate with existing user's data on load
@@ -68,6 +71,18 @@ function SettingsTab({ activeUser, setActiveUser }) {
     setNewPassword(''); // clean temp security field
   };
 
+  const handleDeleteAccount = () => {
+    setShowConfirmModal(true);
+  };
+
+  const confirmDeleteAccount = () => {
+    const usersData = JSON.parse(localStorage.getItem('olist_users') || '[]');
+    const newUsersData = usersData.filter(u => u.email !== activeUser);
+    localStorage.setItem('olist_users', JSON.stringify(newUsersData));
+    localStorage.removeItem('olist_active_user');
+    setActiveUser(null);
+  };
+
   return (
     <div className="content-container">
       <h1 className="title" style={{ textAlign: 'left', marginBottom: '2rem' }}>Minhas Configurações ⚙️</h1>
@@ -98,23 +113,62 @@ function SettingsTab({ activeUser, setActiveUser }) {
 
           <div>
              <label style={{ display: 'block', color: '#94a3b8', marginBottom: '0.5rem', fontSize: '0.875rem' }}>Nova Senha Opcional</label>
-             <input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} placeholder="Deixe em branco para não alterar" 
-                style={{ width: '100%', padding: '0.875rem', background: 'rgba(15, 23, 42, 0.8)', border: '1px solid var(--glass-border)', color: 'white', borderRadius: '8px', fontFamily: 'inherit' }}
-             />
+             <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+               <input type={showNewPassword ? "text" : "password"} value={newPassword} onChange={e => setNewPassword(e.target.value)} placeholder="Deixe em branco para não alterar" 
+                  style={{ width: '100%', padding: '0.875rem', paddingRight: '2.5rem', background: 'rgba(15, 23, 42, 0.8)', border: '1px solid var(--glass-border)', color: 'white', borderRadius: '8px', fontFamily: 'inherit', boxSizing: 'border-box' }}
+               />
+               <button type="button" onClick={() => setShowNewPassword(!showNewPassword)} style={{ position: 'absolute', right: '0.75rem', background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 0 }}>
+                 {showNewPassword ? (
+                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                 ) : (
+                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                 )}
+               </button>
+             </div>
           </div>
 
           <div>
-             <label style={{ display: 'block', color: '#fca5a5', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 'bold' }}>Senha Atual (Obrigatória para confirmar)</label>
-             <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Confirme sua identidade" required
-                style={{ width: '100%', padding: '0.875rem', background: 'rgba(15, 23, 42, 0.8)', border: '1px solid rgba(239, 68, 68, 0.5)', color: 'white', borderRadius: '8px', fontFamily: 'inherit' }}
-             />
+             <label style={{ display: 'block', color: '#fca5a5', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 'bold' }}>Senha Atual (Apenas para atualizar dados)</label>
+             <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+               <input type={showPassword ? "text" : "password"} value={password} onChange={e => setPassword(e.target.value)} placeholder="Confirme sua identidade" required
+                  style={{ width: '100%', padding: '0.875rem', paddingRight: '2.5rem', background: 'rgba(15, 23, 42, 0.8)', border: '1px solid rgba(239, 68, 68, 0.5)', color: 'white', borderRadius: '8px', fontFamily: 'inherit', boxSizing: 'border-box' }}
+               />
+               <button type="button" onClick={() => setShowPassword(!showPassword)} style={{ position: 'absolute', right: '0.75rem', background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 0 }}>
+                 {showPassword ? (
+                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                 ) : (
+                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                 )}
+               </button>
+             </div>
           </div>
 
           <button type="submit" style={{ padding: '1rem', background: 'var(--accent-color)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', fontSize: '1rem', transition: '0.2s', marginTop: '1rem' }} onMouseOver={e => e.currentTarget.style.background = 'var(--accent-hover)'} onMouseOut={e => e.currentTarget.style.background = 'var(--accent-color)'}>
              Aplicar Modificações
           </button>
         </form>
+
+        <hr style={{ border: 'none', borderTop: '1px outset rgba(239, 68, 68, 0.3)', margin: '2rem 0 1.5rem 0' }} />
+        
+        <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
+          <button type="button" onClick={handleDeleteAccount} style={{ padding: '0.75rem 1.5rem', background: 'transparent', color: '#fca5a5', border: '1px solid rgba(239, 68, 68, 0.5)', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', transition: '0.2s' }} onMouseOver={e => { e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)'; }} onMouseOut={e => { e.currentTarget.style.background = 'transparent'; }}>
+            🗑️ Apagar Minha Conta
+          </button>
+        </div>
       </div>
+
+      {showConfirmModal && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}>
+          <div className="glass-panel" style={{ padding: '2rem', maxWidth: '400px', textAlign: 'center', border: '1px solid rgba(239, 68, 68, 0.3)' }}>
+            <h3 style={{ marginTop: 0, color: '#fca5a5', fontSize: '1.5rem' }}>⚠️ Atenção</h3>
+            <p style={{ color: '#cbd5e1', marginBottom: '2rem', lineHeight: '1.5' }}>Você tem certeza que deseja deletar permanentemente a conta <strong>{activeUser}</strong>? Após a confirmação, você será deslogado.</p>
+            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+              <button type="button" onClick={() => setShowConfirmModal(false)} style={{ padding: '0.75rem 1.5rem', background: 'transparent', color: '#cbd5e1', border: '1px solid #475569', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>Cancelar</button>
+              <button type="button" onClick={confirmDeleteAccount} style={{ padding: '0.75rem 1.5rem', background: '#ef4444', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>Sim, apagar agora</button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );
